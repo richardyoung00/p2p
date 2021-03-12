@@ -17,15 +17,23 @@ function generateId(length = 6) {
 function connect(connectId) {
     console.log("connecting to " + connectId)
     conn = peer.connect(connectId);
-    conn.on('open', function () {
-        // Receive messages
-        conn.on('data', function (data) {
-            console.log('Received', data);
-        });
+    console.log("done")
+    initialiseConnection()
+}
 
-        // Send messages
+function initialiseConnection() {
+    console.log("setup connection")
+    conn.on('open', function () {
+        console.log("Connection open")
         conn.send('Hello!');
     });
+
+    conn.on('data', function (data) {
+        console.log('Received', data);
+    });
+
+    conn.send('Hello from');
+
 }
 
 async function init() {
@@ -34,19 +42,25 @@ async function init() {
     const id = generateId()
     myPeerIdEl.innerText = id
 
-    peer = new Peer(id);
+    peer = new Peer(id, {
+        host: 'localhost',
+        port: 9000,
+        path: '/myapp'
+    });
     console.log(peer)
 
     peer.on('open', function (id) {
-        console.log('My peer ID is: ' + id);
+        console.log('Connection to server established. ID is: ' + id);
     });
-    
+
     peer.on('error', function (err) {
         console.log('Error: ', err);
     });
-    
-    peer.on('connection', function () {
-        console.log('Connection established');
+
+    peer.on('connection', function (connection) {
+        conn = connection
+        console.log('Connection from peer recieved');
+        initialiseConnection()
     });
 
     connectButtonEl.addEventListener('click', () => {
