@@ -61,7 +61,7 @@ async function init() {
         console.log('Error: ', err);
     });
 
-    peer.on('connection', function (connection) {
+    peer.on('connection', async function (connection) {
         conn = connection
         console.log('Connection from peer recieved');
         await initialiseConnection()
