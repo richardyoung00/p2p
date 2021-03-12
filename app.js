@@ -14,25 +14,29 @@ function generateId(length = 6) {
     return result;
 }
 
-function connect(connectId) {
+async function connect(connectId) {
     console.log("connecting to " + connectId)
     conn = peer.connect(connectId);
     console.log("done")
-    initialiseConnection()
+    await initialiseConnection()
 }
 
-function initialiseConnection() {
+async function initialiseConnection() {
     console.log("setup connection")
-    conn.on('open', function () {
-        console.log("Connection open")
-        conn.send('Hello!');
-    });
+
+    await new Promise((resolve, reject) => {
+        conn.on('open', function () {
+            console.log("Connection open")
+            resolve()
+        });
+    })
+
 
     conn.on('data', function (data) {
         console.log('Received', data);
     });
 
-    conn.send('Hello from');
+    conn.send('Hello from ' + peer.id);
 
 }
 
@@ -60,12 +64,12 @@ async function init() {
     peer.on('connection', function (connection) {
         conn = connection
         console.log('Connection from peer recieved');
-        initialiseConnection()
+        await initialiseConnection()
     });
 
-    connectButtonEl.addEventListener('click', () => {
+    connectButtonEl.addEventListener('click', async () => {
         const connectId = connectIdEl.value
-        connect(connectId)
+        await connect(connectId)
     })
 
 }
