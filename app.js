@@ -43,7 +43,7 @@ async function init() {
     myPeerIdEl.innerText = id
 
     peer = new Peer(id, {
-        host: 'localhost',
+        host: '192.168.0.126',
         port: 9000,
         path: '/myapp'
     });
